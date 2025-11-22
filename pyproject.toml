@@ -1,0 +1,24 @@
+[project]
+name = "ai-act-kg"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.13.4",
+    "fastapi[standard]>=0.120.0",
+    "gqlalchemy>=1.8.0",
+    "jinja2>=3.1.6",
+    "lxml>=6.0.0",
+    "ollama>=0.6.0",
+    "pymgclient>=1.4.0",
+    "redis>=7.0.1",
+    "roman>=5.1",
+    "tqdm>=4.67.1",
+]
+
+[dependency-groups]
+dev = [
+    "jupyterlab>=4.4.4",
+    "sentence-transformers>=5.1.1",
+]

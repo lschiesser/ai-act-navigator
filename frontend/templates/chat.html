@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Act Navigator</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='final.css') }}">
+  </head>
+
+  <body class="bg-gray-50 text-gray-900 font-sans h-screen flex flex-col">
+    <!-- HEADER -->
+    <header class="bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-6 py-3">
+      <div class="flex items-center space-x-2">
+        <div class="bg-purple-600 p-2 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-white" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scale-icon lucide-scale"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+        </div>
+        <div>
+          <h1 class="font-semibold text-lg">AI Act Navigator</h1>
+          <p class="text-sm text-gray-500">Get instant answers about the EU Artificial Intelligence Act</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex flex-1 overflow-hidden relative">
+      <!-- CHAT PANEL -->
+      <section class="flex flex-col flex-1 border-r border-gray-200 overflow-hidden transition-all duration-300 relative">
+        <div id="chatArea" class="flex-1 overflow-y-auto p-6 space-y-6">
+          <!-- Assistant message -->
+          <div class="flex items-start space-x-3">
+            <div class="bg-purple-100 p-2 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-purple-600" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bot-icon lucide-bot"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+            </div>
+            <div class="bg-white border border-gray-200 shadow-sm rounded-2xl px-4 py-3 max-w-xl">
+              <p class="text-sm">
+                Welcome! I'm your AI Act Navigator. I can help you understand the EU's Artificial Intelligence Act,
+                including its requirements, risk categories, compliance obligations, and more. How can I assist you today?
+              </p>
+            </div>
+          </div>
+
+        <!-- Suggested Questions -->
+          <div id="suggestedQuestions" class="pl-10">
+            <p class="text-sm font-medium text-gray-600 mb-3">Suggested questions:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl">
+              <button class="suggested-btn text-sm border border-gray-300 rounded-xl py-2 px-3 text-left hover:bg-gray-100 transition">
+                What is the EU AI Act?
+              </button>
+              <button class="suggested-btn text-sm border border-gray-300 rounded-xl py-2 px-3 text-left hover:bg-gray-100 transition">
+                What AI systems are considered high-risk according to the AI Act?
+              </button>
+              <button class="suggested-btn text-sm border border-gray-300 rounded-xl py-2 px-3 text-left hover:bg-gray-100 transition">
+                What are prohibited AI practices?
+              </button>
+              <button class="suggested-btn text-sm border border-gray-300 rounded-xl py-2 px-3 text-left hover:bg-gray-100 transition">
+                Who does the AI Act apply to?
+              </button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+        <!-- Input -->
+        <div class="border-t border-gray-200 bg-white p-4">
+          <form id="chatForm" class="flex items-center space-x-2">
+            <input id="chatInput" type="text" placeholder="Ask a question about the AI Act..."
+                   class="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
+            <button type="submit"
+                    class="bg-purple-600 hover:bg-purple-700 text-white rounded-xl p-2 transition">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send-icon lucide-send"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+            </button>
+          </form>
+          <p class="text-xs text-gray-400 mt-2">The advice from the chatbot does not count as legal advice on part of the DFKI. This is a research preview, generative systems can make mistakes and produce false statements.</p>
+        </div>
+
+        <!-- Sidebar toggle handle -->
+        <button id="sidebarHandle"
+                class="absolute top-1/2 right-0 -translate-y-1/2 bg-purple-600 text-white px-1.5 py-2 rounded-l-lg shadow-md hover:bg-purple-700 transition">
+          ⇤
+        </button>
+      </section>
+
+      <!-- TRACE PANEL -->
+      <aside id="tracePanel"
+             class="bg-gray-100 border-l border-gray-200 flex flex-col transition-all duration-300 ease-in-out w-1/3 overflow-hidden">
+        <div class="p-4 border-b border-gray-300 flex justify-between items-center">
+          <h2 class="font-semibold text-gray-700">Trace & Observability</h2>
+        </div>
+        <div id="traceContent" class="flex-1 overflow-y-auto p-4 space-y-4 text-sm text-gray-600">
+          <p class="text-sm text-gray-500">
+            Ask a question to see the agent&apos;s reasoning trace and tool calls.
+          </p>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 text-xs text-gray-500 text-center py-2">
+      © 2025 DFKI SEE
+    </footer>
+
+    <!-- COLLAPSE / TOGGLE LOGIC -->
+        <script>
+      const tracePanel = document.getElementById('tracePanel');
+      const sidebarHandle = document.getElementById('sidebarHandle');
+      const traceContent = document.getElementById('traceContent');
+      const chatArea = document.getElementById('chatArea');
+      const chatInput = document.getElementById('chatInput');
+      const chatForm = document.getElementById('chatForm');
+      const submitButton = chatForm.querySelector('button[type="submit"]');
+      const suggestedDiv = document.getElementById('suggestedQuestions');
+      const suggestedBtns = document.querySelectorAll('.suggested-btn');
+
+      let isCollapsed = false;
+      let requestInFlight = false;
+
+      const sessionId = (() => {
+        try {
+          const key = 'ai-act-session-id';
+          const generated =
+            typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+              ? crypto.randomUUID()
+              : `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+          sessionStorage.setItem(key, generated);
+          return generated;
+        } catch (_) {
+          return `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        }
+      })();
+
+      function setCollapsed(state) {
+        isCollapsed = state;
+        if (isCollapsed) {
+          tracePanel.classList.add('w-0');
+          tracePanel.classList.remove('w-1/3');
+          sidebarHandle.innerText = '⇥';
+        } else {
+          tracePanel.classList.remove('w-0');
+          tracePanel.classList.add('w-1/3');
+          sidebarHandle.innerText = '⇤';
+        }
+      }
+
+      function setLoadingState(isLoading) {
+        chatInput.disabled = isLoading;
+        submitButton.disabled = isLoading;
+        submitButton.classList.toggle('opacity-50', isLoading);
+        submitButton.classList.toggle('cursor-not-allowed', isLoading);
+        if (!isLoading) {
+          chatInput.focus();
+        }
+      }
+
+      sidebarHandle.addEventListener('click', () => setCollapsed(!isCollapsed));
+
+      function addUserMessage(text) {
+        const msg = document.createElement('div');
+        msg.className = 'flex items-start justify-end space-x-3';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bg-blue-600 text-white rounded-2xl px-4 py-3 max-w-xl';
+
+        const paragraph = document.createElement('p');
+        paragraph.className = 'text-sm whitespace-pre-line';
+        paragraph.textContent = text;
+
+        bubble.appendChild(paragraph);
+        msg.appendChild(bubble);
+        chatArea.appendChild(msg);
+        chatArea.scrollTop = chatArea.scrollHeight;
+        if (suggestedDiv) {
+          suggestedDiv.style.display = 'none';
+        }
+      }
+
+      function addAssistantResponse(text) {
+        const msg = document.createElement('div');
+        msg.className = 'flex items-start space-x-3';
+
+        const avatar = document.createElement('div');
+        avatar.className = 'bg-purple-100 p-2 rounded-full';
+        avatar.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-purple-600" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 8V4H8"></path>
+            <rect width="16" height="12" x="4" y="8" rx="2"></rect>
+            <path d="M2 14h2"></path>
+            <path d="M20 14h2"></path>
+            <path d="M15 13v2"></path>
+            <path d="M9 13v2"></path>
+          </svg>
+        `;
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bg-white border border-gray-200 rounded-2xl px-4 py-3 max-w-xl text-sm text-gray-700 whitespace-pre-line';
+        bubble.textContent = text;
+
+        msg.appendChild(avatar);
+        msg.appendChild(bubble);
+        chatArea.appendChild(msg);
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }
+
+      function showThinkingAnimation() {
+        const phrases = [
+          'Understanding query...',
+          'Searching Knowledge Graph...',
+          'Looking for related sections...',
+          'Generating answer...',
+        ];
+        const container = document.createElement('div');
+        container.className = 'flex items-start space-x-3';
+        container.id = 'thinkingMessage';
+        container.innerHTML = `
+          <div class="bg-purple-100 p-2 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-purple-600" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bot-icon lucide-bot"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+            </div>
+          <div class="bg-white border border-gray-200 rounded-2xl px-4 py-3 max-w-xl text-sm text-gray-700">
+            <span id="thinkingText">${phrases[0]}</span>
+          </div>
+        `;
+        chatArea.appendChild(container);
+        chatArea.scrollTop = chatArea.scrollHeight;
+
+        let index = 0;
+        const interval = setInterval(() => {
+          index = (index + 1) % phrases.length;
+          const thinkingText = document.getElementById('thinkingText');
+          if (thinkingText) {
+            thinkingText.textContent = phrases[index];
+          }
+        }, 3000);
+
+        return () => {
+          clearInterval(interval);
+          container.remove();
+        };
+      }
+
+      function formatForDisplay(value) {
+        if (value === null || value === undefined) {
+          return '—';
+        }
+        if (typeof value === 'string') {
+          const trimmed = value.trim();
+          if (!trimmed) {
+            return '—';
+          }
+          try {
+            return JSON.stringify(JSON.parse(trimmed), null, 2);
+          } catch (_) {
+            return value;
+          }
+        }
+        try {
+          return JSON.stringify(value, null, 2);
+        } catch (_) {
+          return String(value);
+        }
+      }
+
+      function updateTracePanel(observationLog) {
+        if (!traceContent) return;
+        traceContent.innerHTML = '';
+
+        if (!Array.isArray(observationLog) || observationLog.length === 0) {
+          const empty = document.createElement('p');
+          empty.className = 'text-sm text-gray-500';
+          empty.textContent = 'No tool calls were required for this answer.';
+          traceContent.appendChild(empty);
+          return;
+        }
+
+        observationLog.forEach((entry, index) => {
+          const normalized = Array.isArray(entry) ? entry : [entry, null];
+          const callInfo = normalized[0] || {};
+          const toolOutput = normalized[1];
+
+          const card = document.createElement('div');
+          card.className = 'bg-white border border-gray-200 rounded-xl p-3 shadow-sm space-y-2';
+
+          // --- Title ---
+          const title = document.createElement('p');
+          title.className = 'font-medium text-gray-700';
+          const label = callInfo && callInfo.name ? callInfo.name : 'Agent step';
+          title.textContent = `${index + 1}. ${label}`;
+          card.appendChild(title);
+
+          // --- Input Arguments ---
+          if (callInfo && callInfo.arguments !== undefined) {
+            const argsTitle = document.createElement('p');
+            argsTitle.className = 'text-xs font-semibold text-gray-500 uppercase tracking-wide';
+            argsTitle.textContent = 'Input';
+            card.appendChild(argsTitle);
+
+            const argsBlock = document.createElement('p');
+            argsBlock.className = 'bg-gray-50 text-xs text-gray-600 rounded-lg p-2 whitespace-pre-wrap break-words';
+            argsBlock.textContent = formatForDisplay(callInfo.arguments);
+            card.appendChild(argsBlock);
+          }
+
+          // --- Output Formatting ---
+          if (toolOutput !== undefined) {
+            const outputTitle = document.createElement('p');
+            outputTitle.className = 'text-xs font-semibold text-gray-500 uppercase tracking-wide';
+            outputTitle.textContent = 'Output';
+            card.appendChild(outputTitle);
+
+            const outputBlock = document.createElement('div');
+            outputBlock.className = 'bg-gray-50 text-xs text-gray-600 rounded-lg p-2 space-y-1 whitespace-pre-wrap break-words max-h-80 overflow-y-auto';
+
+            try {
+              const parsedOutput = typeof toolOutput === 'string' ? JSON.parse(toolOutput) : toolOutput;
+
+              if (label.toLowerCase().includes('node_retrieval')) {
+                // --- Node Retrieval Tool ---
+                const header = document.createElement('p');
+                header.textContent = 'The following nodes were retrieved:';
+                outputBlock.appendChild(header);
+
+                if (Array.isArray(parsedOutput.results)) {
+                  parsedOutput.results.forEach((node) => {
+                    const item = document.createElement('p');
+                    item.textContent = `- ${node.id} (similarity: ${node.similarity.toFixed(3)})`;
+                    outputBlock.appendChild(item);
+                  });
+                } else {
+                  const fallback = document.createElement('p');
+                  fallback.textContent = 'No nodes found.';
+                  outputBlock.appendChild(fallback);
+                }
+
+              } else if (label.toLowerCase().includes('graph_traversal')) {
+                // --- Graph Traversal Tool ---
+                const header1 = document.createElement('p');
+                header1.textContent = 'The node has the following children or parents:';
+                outputBlock.appendChild(header1);
+
+                if (Array.isArray(parsedOutput.children) && parsedOutput.children.length > 0) {
+                  parsedOutput.children.forEach((n) => {
+                    const item = document.createElement('p');
+                    item.textContent = `- ${n}`;
+                    outputBlock.appendChild(item);
+                  });
+                } else {
+                  const none = document.createElement('p');
+                  none.textContent = '- None found.';
+                  outputBlock.appendChild(none);
+                }
+
+                const header2 = document.createElement('p');
+                header2.className = 'mt-1';
+                header2.textContent = 'The node is referenced by or references the following nodes:';
+                outputBlock.appendChild(header2);
+
+                if (Array.isArray(parsedOutput.references) && parsedOutput.references.length > 0) {
+                  parsedOutput.references.forEach((n) => {
+                    const item = document.createElement('p');
+                    item.textContent = `- ${n.id}`;
+                    outputBlock.appendChild(item);
+                  });
+                } else {
+                  const none = document.createElement('p');
+                  none.textContent = '- None found.';
+                  outputBlock.appendChild(none);
+                }
+
+              } else if (label.toLowerCase().includes('single_node_retriever')) {
+                const header = document.createElement("p");
+                header.textContent = `Node ${parsedOutput.id} was retrieved`;
+                outputBlock.appendChild(header);
+                if (parsedOutput.label != "Paragraph") {
+                  const name = document.createElement("p");
+                  name.textContent = `Node Name: \n ${parsedOutput.properties.name}`;
+                  outputBlock.appendChild(name);
+                } else {
+                  const text = document.createElement("p");
+                  item.textContent = `Node Text: \n ${parsedOutput.properties.text}`;
+                  outputBlock.appendChild(text);
+                }
+              } else {
+                // --- Generic fallback ---
+                const pre = document.createElement('p');
+                pre.textContent = formatForDisplay(toolOutput);
+                outputBlock.appendChild(pre);
+              }
+            } catch (err) {
+              const pre = document.createElement('p');
+              pre.textContent = formatForDisplay(toolOutput);
+              outputBlock.appendChild(pre);
+            }
+
+            card.appendChild(outputBlock);
+          }
+
+          traceContent.appendChild(card);
+        });
+
+        if (isCollapsed) {
+          setCollapsed(false);
+        }
+      }
+
+      chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (requestInFlight) return;
+
+        const query = chatInput.value.trim();
+        if (!query) return;
+
+        addUserMessage(query);
+        chatInput.value = '';
+
+        requestInFlight = true;
+        setLoadingState(true);
+        let stopThinking = showThinkingAnimation();
+
+        try {
+          const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              question: query,
+              session_id: sessionId,
+            }),
+          });
+
+          if (!response.ok) {
+            let errorMessage = `Request failed with status ${response.status}`;
+            try {
+              const errorPayload = await response.json();
+              if (errorPayload && errorPayload.detail) {
+                errorMessage = errorPayload.detail;
+              }
+            } catch (_) {
+              // Ignore JSON parse errors and use default message
+            }
+            throw new Error(errorMessage);
+          }
+
+          const payload = await response.json();
+          if (stopThinking) {
+            stopThinking();
+            stopThinking = null;
+          }
+
+          const answer = payload && payload.answer ? payload.answer : 'No answer returned by the agent.';
+          addAssistantResponse(answer);
+          updateTracePanel(payload ? payload.observation_log : []);
+        } catch (error) {
+          console.error('Chat request failed:', error);
+          if (stopThinking) {
+            stopThinking();
+            stopThinking = null;
+          }
+          addAssistantResponse(`Sorry, something went wrong while contacting the assistant. ${error instanceof Error ? error.message : ''}`.trim());
+        } finally {
+          if (stopThinking) {
+            stopThinking();
+          }
+          setLoadingState(false);
+          requestInFlight = false;
+        }
+      });
+
+      suggestedBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (requestInFlight) return;
+          const question = btn.textContent.trim();
+          chatInput.value = question;
+          chatForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        });
+      });
+    </script>
+  </body>
+</html>

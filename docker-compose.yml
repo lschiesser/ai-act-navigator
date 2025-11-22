@@ -1,0 +1,36 @@
+services:
+  memgraph:
+    image: memgraph/memgraph-mage:latest
+    volumes:
+      - mg_lib:/var/lib/memgraph
+      - mg_log:/var/lib/memgraph
+    ports:
+      - "7690:7687"
+      - "7450:7444"
+    command: ["--schema-info-enabled=true"]
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'RETURN 0;' | mgconsole || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 0s
+    restart: unless-stopped
+  lab:
+    image: memgraph/lab:latest
+    ports:
+      - 3001:3000
+    environment:
+      QUICK_CONNECT_MG_HOST: memgraph
+  valkey:
+    image: valkey/valkey:latest
+  web:
+    build: .
+    ports:
+      - 8001:8000
+    env_file:
+      - .env
+    restart: unless-stopped
+
+volumes:
+  mg_lib:
+  mg_log:

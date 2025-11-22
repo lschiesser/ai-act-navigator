@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Behind the Chatbot – AI Act Demonstrator</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='final.css') }}">
+  <style>
+    /* Simple keyframe helpers for subtle motion */
+    @keyframes pulseSoft { 0%{transform:scale(1)} 50%{transform:scale(1.02)} 100%{transform:scale(1)} }
+    @keyframes floatUp { 0%{transform:translateY(6px); opacity:.7} 100%{transform:translateY(-6px); opacity:1} }
+    .animate-pulse-soft { animation: pulseSoft 3s ease-in-out infinite; }
+    .animate-float { animation: floatUp 2.6s ease-in-out infinite alternate; }
+    .card { @apply bg-white/80 backdrop-blur border border-gray-200 rounded-2xl shadow-sm; }
+    .tag { @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium border; }
+    .kbd { @apply inline-block rounded border bg-gray-50 px-1.5 py-0.5 text-[11px] font-mono text-gray-700; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans h-screen flex flex-col">
+    <header class="bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-6 py-3">
+      <div class="flex items-center space-x-2">
+        <div class="bg-purple-600 p-2 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-white" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scale-icon lucide-scale"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+        </div>
+        <div>
+          <h1 class="font-semibold text-lg">AI Act Navigator</h1>
+          <p class="text-sm text-gray-500">Get instant answers about the EU Artificial Intelligence Act</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="mx-auto max-w-6xl px-6 pt-14 pb-12">
+      <div class="flex items-start justify-between gap-6">
+        <div class="max-w-3xl">
+          <p class="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white/70 px-3 py-1 text-xs text-indigo-700 shadow-sm backdrop-blur">
+            <span class="inline-block h-2 w-2 rounded-full bg-indigo-500"></span>
+            Demonstrator · AI Act Navigator
+          </p>
+          <h1 class="mt-4 text-3xl font-semibold leading-tight text-slate-900 sm:text-4xl">Was steckt hinter dem <span class="text-indigo-600">AI Act Navigator</span>?</h1>
+          <p class="mt-4 text-lg text-slate-700">Ein interaktives Q&A-System zur Exploration des europäischen AI Act – aufgebaut auf einem Wissensgraphen, gesteuert durch ein ReAct‑Agenten‑Muster und mit Kurzzeitgedächtnis in Valkey.</p>
+        </div>
+        <div class="hidden shrink-0 sm:block">
+          <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-indigo-50 grid place-items-center">
+                <!-- Graph Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6 text-indigo-600"><path d="M5 3a2 2 0 0 0-2 2v1.586A2 2 0 0 0 3.586 8L8 12.414V19a2 2 0 0 0 2 2h1.5a2 2 0 0 0 2-2v-3.086l4.414-4.414A2 2 0 0 0 19.414 9H21a2 2 0 1 0 0-4h-1.586A2 2 0 0 0 18 5.586L13.586 10H11a2 2 0 0 0-2 2v1.586L4.414 11A2 2 0 0 0 3 10.586V5a2 2 0 0 0-2-2Z"/></svg>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-500">Komponenten</p>
+                <p class="font-medium text-slate-900">Graph · ReAct · Memory</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <main class="mx-auto max-w-6xl px-6 pb-24">
+    <!-- Aufbau des Wissensgraphen -->
+    <section id="graph" class="scroll-mt-24">
+      <div class="grid gap-6 md:grid-cols-5">
+        <div class="md:col-span-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 class="text-xl font-semibold text-slate-900">🧩 Aufbau des Wissensgraphen</h2>
+          <p class="mt-3 text-slate-700">Der Wissensgraph bildet die Struktur des AI Act nach. Die folgenden Strukturelemente werden als <span class="font-medium">Knoten</span> modelliert und über <span class="font-medium">Beziehungen</span> verknüpft:</p>
+
+          <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Knoten</p>
+              <ul class="mt-2 space-y-1.5">
+                <li class="flex items-start gap-2"><span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span> Kapitel</li>
+                <li class="flex items-start gap-2"><span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span> Artikel</li>
+                <li class="flex items-start gap-2"><span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span> Paragraphen & Unterparagraphen</li>
+                <li class="flex items-start gap-2"><span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span> Annexes (Anhänge)</li>
+                <li class="flex items-start gap-2"><span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span> Beweggründe (Recitals)</li>
+              </ul>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Beziehungen</p>
+              <ul class="mt-2 space-y-1.5">
+                <li class="flex items-start gap-2"><span class="mt-1 inline-flex h-2.5 w-9 items-center justify-center rounded bg-slate-800 text-[10px] font-semibold text-white">CONTAINS</span><span>Hierarchische Struktur (z. B. Kapitel ➝ Artikel ➝ Paragraph)</span></li>
+                <li class="flex items-start gap-2"><span class="mt-1 inline-flex h-2.5 w-9 items-center justify-center rounded bg-slate-800 text-[10px] font-semibold text-white">NEXT</span><span>Reihenfolge der Abschnitte</span></li>
+                <li class="flex items-start gap-2"><span class="mt-1 inline-flex h-2.5 w-16 items-center justify-center rounded bg-slate-800 px-1 text-[10px] font-semibold text-white">REFERENCES</span><span>Querverweise & inhaltliche Bezugnahmen</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <p class="mt-4 text-sm text-slate-600">[Visual: Mini-Graph mit Knoten & Kanten. Unten eine einfache SVG‑Skizze als Platzhalter.]</p>
+
+          <!-- Simple illustrative SVG graph -->
+          <div class="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+            <svg viewBox="0 0 680 240" class="h-56 w-full">
+              <!-- nodes -->
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1"><stop offset="0%" stop-color="#a5b4fc"/><stop offset="100%" stop-color="#7dd3fc"/></linearGradient>
+              </defs>
+              <circle cx="90" cy="120" r="28" fill="url(#g1)"/>
+              <text x="90" y="124" text-anchor="middle" class="fill-white" font-size="12" font-family="ui-sans-serif, system-ui">Kap.</text>
+              <circle cx="240" cy="120" r="28" fill="#e0e7ff"/>
+              <text x="240" y="124" text-anchor="middle" class="fill-slate-700" font-size="12" font-family="ui-sans-serif, system-ui">Art.</text>
+              <circle cx="390" cy="120" r="28" fill="#e0f2fe"/>
+              <text x="390" y="124" text-anchor="middle" class="fill-slate-700" font-size="12" font-family="ui-sans-serif, system-ui">§</text>
+              <circle cx="540" cy="60" r="24" fill="#ffe4e6"/>
+              <text x="540" y="64" text-anchor="middle" class="fill-slate-700" font-size="12" font-family="ui-sans-serif, system-ui">Annex</text>
+              <circle cx="540" cy="180" r="24" fill="#fef3c7"/>
+              <text x="540" y="184" text-anchor="middle" class="fill-slate-700" font-size="12" font-family="ui-sans-serif, system-ui">Recital</text>
+
+              <!-- edges: CONTAINS (solid) -->
+              <line x1="118" y1="120" x2="212" y2="120" stroke="#334155" stroke-width="2" />
+              <line x1="268" y1="120" x2="362" y2="120" stroke="#334155" stroke-width="2" />
+              <text x="165" y="110" font-size="10" fill="#334155" font-family="ui-sans-serif, system-ui">CONTAINS</text>
+              <text x="315" y="110" font-size="10" fill="#334155" font-family="ui-sans-serif, system-ui">CONTAINS</text>
+
+              <!-- edge: NEXT (dotted) -->
+              <line x1="240" y1="90" x2="390" y2="90" stroke="#334155" stroke-width="2" stroke-dasharray="4 4"/>
+              <text x="315" y="80" font-size="10" fill="#334155" font-family="ui-sans-serif, system-ui">NEXT</text>
+
+              <!-- edges: REFERENCES (curved) -->
+              <path d="M420 110 C 480 95, 500 80, 520 70" fill="none" stroke="#334155" stroke-width="2" />
+              <path d="M420 130 C 480 145, 500 160, 520 170" fill="none" stroke="#334155" stroke-width="2" />
+              <text x="485" y="56" font-size="10" fill="#334155" font-family="ui-sans-serif, system-ui">REFERENCES</text>
+            </svg>
+          </div>
+        </div>
+
+        <aside class="md:col-span-2 grid content-start gap-4">
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-sm font-semibold text-slate-900">Warum Graph?</h3>
+            <p class="mt-2 text-sm text-slate-700">Graphen erlauben es, sowohl Struktur (CONTAINS, NEXT) als auch inhaltliche Verweise (REFERENCES) des Gesetzes zu modellieren und effizient zu traversieren.</p>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-sm font-semibold text-slate-900">Suchstrategie</h3>
+            <p class="mt-2 text-sm text-slate-700">Relevante Passagen werden über semantische Suche gefunden und durch Traversierung in ihren Kontext eingebettet.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ReAct & Tools -->
+    <section id="react" class="mt-12 scroll-mt-24">
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-xl font-semibold text-slate-900">🤖 ReAct-Pattern & Tooling</h2>
+        <p class="mt-3 text-slate-700">Der Agent kombiniert <span class="font-medium">Reasoning</span> (gedankliche Planung) mit <span class="font-medium">Acting</span> (gezielte Tool‑Aufrufe), um Antworten transparent und nachvollziehbar aus dem Graphen zu erarbeiten.</p>
+
+        <!-- Tool cards -->
+        <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="rounded-xl border border-slate-200 p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Tool</p>
+            <h3 class="mt-1 font-semibold text-slate-900">node_retrieval</h3>
+            <p class="mt-2 text-sm text-slate-700">Sucht den Wissensgraphen nach relevanten Passagen anhand natürlicher Sprache ab.</p>
+            <code class="mt-3 block rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700">"Search the AI Act knowledge graph for relevant passages based on natural language query"</code>
+          </div>
+          <div class="rounded-xl border border-slate-200 p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Tool</p>
+            <h3 class="mt-1 font-semibold text-slate-900">graph_traversal</h3>
+            <p class="mt-2 text-sm text-slate-700">Holt Kontext (Unterparagraphen, Verweise) und baut hierarchischen Text inkl. Metadaten zusammen.</p>
+            <code class="mt-3 block rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700">"Retrieves a node's context and references from the knowledge graph"</code>
+          </div>
+          <div class="rounded-xl border border-slate-200 p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Tool</p>
+            <h3 class="mt-1 font-semibold text-slate-900">single_node_retriever</h3>
+            <p class="mt-2 text-sm text-slate-700">Ruft gezielt einen einzelnen Knoten per ID ab, ohne zusätzlichen Kontext.</p>
+            <code class="mt-3 block rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700">"Retrieves a single node by its unique ID"</code>
+          </div>
+        </div>
+
+        <!-- ReAct flow visualization placeholder -->
+        <div class="mt-6 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+          <p class="text-sm text-slate-600">[Visual: Ablaufdiagramm ReAct – 1) Nutzerfrage → 2) Reasoning → 3) Tool‑Aufruf(e) → 4) Zusammenführen → 5) Antwort]</p>
+          <div class="mt-3 grid grid-cols-5 items-center gap-2 text-xs font-medium text-slate-700">
+            <div class="rounded-lg bg-white px-3 py-2 text-center shadow-sm">Nutzerfrage</div>
+            <div class="text-center">→</div>
+            <div class="rounded-lg bg-white px-3 py-2 text-center shadow-sm">Reasoning</div>
+            <div class="text-center">→</div>
+            <div class="rounded-lg bg-white px-3 py-2 text-center shadow-sm">Tool‑Aufrufe</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ShortTermMemory -->
+    <section id="memory" class="mt-12 scroll-mt-24">
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 class="text-xl font-semibold text-slate-900">🧠 Kurzzeitgedächtnis (ShortTermMemory)</h2>
+          <p class="mt-3 text-slate-700">Der Agent speichert den Verlauf der Unterhaltung, um Folgefragen kontextuell zu verstehen. Ab einer gewissen Länge werden ältere Teile automatisch zusammengefasst – das erhöht Effizienz und hält Antworten fokussiert.</p>
+          <ul class="mt-4 space-y-2 text-sm text-slate-700">
+            <li class="flex items-start gap-2"><span class="mt-1 h-2.5 w-2.5 rounded-full bg-sky-500"></span> Speicherung in <span class="font-medium">Valkey</span> (lizenzoffene Redis‑Alternative)</li>
+            <li class="flex items-start gap-2"><span class="mt-1 h-2.5 w-2.5 rounded-full bg-sky-500"></span> Automatische <span class="font-medium">Konversations‑Summaries</span> bei langen Dialogen</li>
+            <li class="flex items-start gap-2"><span class="mt-1 h-2.5 w-2.5 rounded-full bg-sky-500"></span> Optimiert für <span class="font-medium">ReAct‑Schritte</span> und Tool‑Kontext</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 shadow-sm">
+          <p class="text-sm text-slate-600">[Visual: Schematische Pipeline „User Query → Memory Store → Zusammenfassung → Valkey Storage“; optional kleines Icon‑Set für Messages/Summaries]</p>
+          <div class="mt-3 grid grid-cols-3 gap-3 text-xs font-medium text-slate-700">
+            <div class="rounded-lg bg-white px-3 py-2 text-center shadow-sm">User Query</div>
+            <div class="rounded-lg bg-white px-3 py-2 text-center shadow-sm">ShortTermMemory</div>
+            <div class="rounded-lg bg-white px-3 py-2 text-center shadow-sm">Valkey DB</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roadmap / Ausblick -->
+    <section id="roadmap" class="mt-12 scroll-mt-24">
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-xl font-semibold text-slate-900">🚀 Aktueller Stand & Ausblick</h2>
+        <p class="mt-3 text-slate-700">Heute beantwortet der Chatbot Fragen auf Basis des Gesetzestextes. Nächste Schritte sind die Integration von EU‑Leitfäden und die Entwicklung eines interaktiven Compliance‑Checks für Unternehmen.</p>
+
+        <ol class="mt-6 space-y-5">
+          <li class="relative rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <span class="absolute -left-3 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">1</span>
+            <p class="text-sm font-semibold text-slate-900">Aktuelle Phase: Q&A über Gesetzestext</p>
+            <p class="text-sm text-slate-700">Explorative Fragen & strukturierte Antworten aus dem Wissensgraphen.</p>
+          </li>
+          <li class="relative rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <span class="absolute -left-3 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">2</span>
+            <p class="text-sm font-semibold text-slate-900">Ausbau: Integration von Leitfäden & Implementierungshinweisen</p>
+            <p class="text-sm text-slate-700">Erweiterung des Graphen um EU‑Guidelines für fundiertere Antworten.</p>
+          </li>
+          <li class="relative rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <span class="absolute -left-3 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">3</span>
+            <p class="text-sm font-semibold text-slate-900">Zielbild: Interaktiver Compliance‑Check</p>
+            <p class="text-sm text-slate-700">Schritt‑für‑Schritt‑Assistent zur Selbsteinschätzung und Dokumentation der Pflichten.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Zusammenfassung / Architekturübersicht -->
+    <section id="summary" class="mt-12 scroll-mt-24">
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-xl font-semibold text-slate-900">⚙️ Architektur in der Übersicht</h2>
+        <p class="mt-3 text-slate-700">Die Lösung kombiniert strukturiertes Wissen (Graph), Reasoning & Tool‑Nutzung (ReAct) sowie Kontextverständnis (ShortTermMemory).</p>
+
+        <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="rounded-xl border border-slate-200 bg-gradient-to-b from-indigo-50 to-white p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Wissen</p>
+            <h3 class="mt-1 font-semibold text-slate-900">Knowledge Graph</h3>
+            <p class="mt-2 text-sm text-slate-700">Knoten: Kapitel, Artikel, Paragraphen, Annexes, Recitals. Kanten: CONTAINS, NEXT, REFERENCES.</p>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Agent</p>
+            <h3 class="mt-1 font-semibold text-slate-900">ReAct</h3>
+            <p class="mt-2 text-sm text-slate-700">Reasoning + gezielte Tool‑Aufrufe für transparente Herleitung.</p>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-gradient-to-b from-emerald-50 to-white p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Tools</p>
+            <h3 class="mt-1 font-semibold text-slate-900">Retrieval & Traversal</h3>
+            <p class="mt-2 text-sm text-slate-700">node_retrieval · graph_traversal · single_node_retriever</p>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-gradient-to-b from-amber-50 to-white p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Kontext</p>
+            <h3 class="mt-1 font-semibold text-slate-900">ShortTermMemory</h3>
+            <p class="mt-2 text-sm text-slate-700">Konversationsspeicher mit Summaries · Valkey als Storage.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+</body>

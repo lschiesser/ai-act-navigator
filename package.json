@@ -1,0 +1,28 @@
+{
+  "name": "ai_act_kg",
+  "version": "1.0.0",
+  "description": "Knowledge-graph powered assistant for exploring the EU Artificial Intelligence Act.   The repo contains the scraping pipeline that turns the legal text into structured JSON, loaders that populate a Memgraph/Neo4j instance with richly linked nodes (articles, annexes, recitals, paragraphs), and a FastAPI app that serves both a LangChain agent and a custom ReAct-style Ollama agent with Langfuse observability, a lightweight frontend, and Valkey-backed conversational memory.",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "postcss frontend/static/styles.css -o frontend/static/final.css",
+    "watch:css": "postcss frontend/static/styles.css -o frontend/static/final.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@see-crai-git.ni.dfki.de:clusters/demonstratoren/ai-act-graphchat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
+    "postcss-cli": "^11.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.17",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17"
+  }
+}
