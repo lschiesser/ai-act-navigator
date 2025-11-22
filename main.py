@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 import os
 
 
-from ollama_agent import create_agent as create_ollama_agent
+from agent.ollama_agent import create_agent as create_ollama_agent
 from agent.memory import ValkeyMemoryStore
 
 app = FastAPI(
